@@ -19,6 +19,8 @@ public class PlayerMovement : PlayerInputs
     public float jumpAnimationDuration = .3f;
     public Ease jumpEase = Ease.OutBack;
 
+    public float playerSwipeDuration = .1f;
+
     private float _currentSpeed;
     private bool _isRunning;
 
@@ -60,6 +62,12 @@ public class PlayerMovement : PlayerInputs
         if (triggeredHorizontal == 1 || triggeredHorizontal == -1)
         {
             currentRigidbody.linearVelocityX = triggeredHorizontal * _currentSpeed;
+
+            /* Swipe to left or right */
+            if (currentRigidbody.transform.localScale.x != triggeredHorizontal)
+            {
+                currentRigidbody.transform.DOScaleX(triggeredHorizontal, playerSwipeDuration);
+            }
         }
 
         HandleFriction();

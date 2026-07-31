@@ -761,8 +761,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6941181203144862036}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.7124492, w: 0.70172375}
-  m_LocalPosition: {x: 1.211, y: -0.591, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.39, y: 3.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -965,7 +965,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8007466312498025151}
   - component: {fileID: 6413013834153556191}
-  - component: {fileID: 3682268284987444045}
+  - component: {fileID: 1721112230505799927}
   m_Layer: 0
   m_Name: PFB_Astronaut
   m_TagString: Untagged
@@ -1011,7 +1011,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!210 &3682268284987444045
+--- !u!210 &1721112230505799927
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1019,9 +1019,9 @@ SortingGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8835229685202505509}
   m_Enabled: 1
-  m_SortingLayerID: -1988276745
-  m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingLayerID: 2097750727
+  m_SortingLayer: 0
+  m_SortingOrder: 20
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
 --- !u!1001 &2987335437580250577
@@ -1270,7 +1270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.81424534
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1286,15 +1286,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 947413611075204424, guid: 8f0a112dd4756bf4fb5e36b6a29ebf4d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
