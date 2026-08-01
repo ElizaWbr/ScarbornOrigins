@@ -8,8 +8,8 @@ public class PlayerMovement : PlayerInputs
     public Rigidbody2D currentRigidbody;
 
     [Header("Player movement")]
-    public float speed = 10;
-    public float runSpeed = 20;
+    public float speed = 15;
+    public float runSpeed = 30;
     public float jumpForce = 15;
     public float movementFriction = .8f;
 
