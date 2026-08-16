@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : PlayerInputs
@@ -10,10 +11,14 @@ public class PlayerMovement : PlayerInputs
     [Header("Player movement")]
     public float speed = 15;
     public float runSpeed = 30;
-    public float jumpForce = 15;
+    public float jumpForce = 23;
+    public float jumpDurationInSeconds = 1f;
     public float movementFriction = .8f;
 
     [Header("Animation Setup")]
+    public Animator currentPlayer;
+    public string runAnimationKey = "Run";
+
     public float jumpScaleY = 1.2f;
     public float jumpScaleX = 0.8f;
     public float jumpAnimationDuration = .3f;
@@ -22,7 +27,8 @@ public class PlayerMovement : PlayerInputs
     public float playerSwipeDuration = .1f;
 
     private float _currentSpeed;
-    private bool _isRunning;
+    private bool _isRunning = false;
+    private bool _isJumping = false;
 
     private void Update()
     {
@@ -35,39 +41,80 @@ public class PlayerMovement : PlayerInputs
     }
     private void CheckPlayerJump()
     {
+        if (_isJumping)
+        {
+            return;
+        }
+
         float triggeredJump = jumpAction.ReadValue<float>();
         if (triggeredJump != 1)
         {
             return;
         }
 
+        currentPlayer.SetBool(runAnimationKey, false);
         currentRigidbody.linearVelocity = Vector2.up * jumpForce;
         HandleJumpAnimation();
     }
     private void HandleJumpAnimation()
     {
-        currentRigidbody.transform.localScale = Vector2.one;
+        _isJumping = true;
+
+        float goingToX = currentRigidbody.transform.localScale.x;
+        if (currentRigidbody.linearVelocityX > 0)
+        {
+            goingToX = 1;
+        }
+        else if (currentRigidbody.linearVelocityX < 0)
+        {
+            goingToX = -1;
+        }
+
+        currentRigidbody.transform.localScale = new Vector2(goingToX, 1);
         DOTween.Kill(currentRigidbody.transform);
 
+        /*
+         * Jumping animation
+         * Removed animation from x scale to avoid auto turning player to the wrong side when changing the x value in the middle of the jumping animation
+         */
+        //currentRigidbody.transform.DOScaleX(scaleX * jumpScaleX, jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(jumpEase);
         currentRigidbody.transform.DOScaleY(jumpScaleY, jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(jumpEase);
-        currentRigidbody.transform.DOScaleX(jumpScaleX, jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(jumpEase);
+
+        StartCoroutine(AllowJumping());
     }
+
+    IEnumerator AllowJumping()
+    {
+        // esperar segundos
+        yield return new WaitForSeconds(jumpDurationInSeconds);
+        _isJumping = false;
+    }
+
     private void CheckPlayerMovement()
     {
         _isRunning = runAction.ReadValue<float>() == 1;
         _currentSpeed = _isRunning ? runSpeed : speed;
+        currentPlayer.speed = _isRunning ? 2 : 1;
+
+        float triggeredHorizontal = horizontalAction.ReadValue<float>();
+        float localScaleX = currentRigidbody.transform.localScale.x;
 
         /* This will return 1 or -1 depending on the pressed key */
-        float triggeredHorizontal = horizontalAction.ReadValue<float>();
         if (triggeredHorizontal == 1 || triggeredHorizontal == -1)
         {
             currentRigidbody.linearVelocityX = triggeredHorizontal * _currentSpeed;
 
             /* Swipe to left or right */
-            if (currentRigidbody.transform.localScale.x != triggeredHorizontal)
+            if (localScaleX != triggeredHorizontal)
             {
                 currentRigidbody.transform.DOScaleX(triggeredHorizontal, playerSwipeDuration);
             }
+            
+            currentPlayer.SetBool(runAnimationKey, !_isJumping);
+        }
+        else
+        {
+            currentPlayer.SetBool(runAnimationKey, false);
         }
 
         HandleFriction();
