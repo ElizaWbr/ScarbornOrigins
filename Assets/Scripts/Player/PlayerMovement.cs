@@ -2,11 +2,14 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 
-public class PlayerMovement : PlayerInputs
+public class PlayerMovement : Inputs
 {
 
     [Header("Player")]
     public Rigidbody2D currentRigidbody;
+
+    [Header("Health")]
+    public HealthBase healthBase;
 
     [Header("Player movement")]
     public float speed = 15;
@@ -16,8 +19,9 @@ public class PlayerMovement : PlayerInputs
     public float movementFriction = .8f;
 
     [Header("Animation Setup")]
-    public Animator currentPlayer;
+    public Animator animator;
     public string runAnimationKey = "Run";
+    public string triggerDeath = "Death";
 
     public float jumpScaleY = 1.2f;
     public float jumpScaleX = 0.8f;
@@ -30,8 +34,24 @@ public class PlayerMovement : PlayerInputs
     private bool _isRunning = false;
     private bool _isJumping = false;
 
+
+    private void Awake()
+    {
+        LoadInputs();
+
+        if (healthBase != null)
+        {
+            healthBase.OnKill += PlayerOnKill;
+        }
+    }
+
     private void Update()
     {
+        if (healthBase.isDead())
+        {
+            return;
+        }
+
         CheckPlayerJump();
         CheckPlayerMovement();
     }
@@ -52,7 +72,7 @@ public class PlayerMovement : PlayerInputs
             return;
         }
 
-        currentPlayer.SetBool(runAnimationKey, false);
+        animator.SetBool(runAnimationKey, false);
         currentRigidbody.linearVelocity = Vector2.up * jumpForce;
         HandleJumpAnimation();
     }
@@ -94,7 +114,7 @@ public class PlayerMovement : PlayerInputs
     {
         _isRunning = runAction.ReadValue<float>() == 1;
         _currentSpeed = _isRunning ? runSpeed : speed;
-        currentPlayer.speed = _isRunning ? 2 : 1;
+        animator.speed = _isRunning ? 2 : 1;
 
         float triggeredHorizontal = horizontalAction.ReadValue<float>();
         float localScaleX = currentRigidbody.transform.localScale.x;
@@ -110,11 +130,11 @@ public class PlayerMovement : PlayerInputs
                 currentRigidbody.transform.DOScaleX(triggeredHorizontal, playerSwipeDuration);
             }
             
-            currentPlayer.SetBool(runAnimationKey, !_isJumping);
+            animator.SetBool(runAnimationKey, !_isJumping);
         }
         else
         {
-            currentPlayer.SetBool(runAnimationKey, false);
+            animator.SetBool(runAnimationKey, false);
         }
 
         HandleFriction();
@@ -137,5 +157,12 @@ public class PlayerMovement : PlayerInputs
             float newVelocity = currentVelocityX - movementFriction;
             currentRigidbody.linearVelocityX = newVelocity > 0 ? newVelocity : 0;
         }
+    }
+
+    private void PlayerOnKill()
+    {
+        /* Sempre remover para evitar ocupar espaço desnecessário na memória */
+        healthBase.OnKill -= PlayerOnKill;
+        animator.SetTrigger(triggerDeath);
     }
 }
