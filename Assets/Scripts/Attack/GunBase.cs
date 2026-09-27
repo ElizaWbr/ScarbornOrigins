@@ -3,14 +3,15 @@ using UnityEngine;
 
 public class GunBase : Inputs
 {
-    public PoolManager poolManager;
-
     [Header("Shoot settings")]
-    public Transform positionToStartShoot;
-    public Transform sideRefference;
-    public float timeBetweenShoot = .1f;
+    public SOAttackSetup soAttackSetup;
+    public Transform shooterRef;
     private Coroutine _currentCoroutine;
-
+    protected override void InputsAwake()
+    {
+        soAttackSetup.projectilePrefab.GetComponent<ProjectileBase>().soAttackSetup = soAttackSetup;
+        ProjectilePool.SetProjectile(soAttackSetup.projectilePrefab);
+    }
     private void Update()
     {
         if (shootAction.IsPressed())
@@ -35,24 +36,24 @@ public class GunBase : Inputs
         while (true)
         {
             Shoot();
-            yield return new WaitForSeconds(timeBetweenShoot);
+            yield return new WaitForSeconds(soAttackSetup.timeBetweenShoot);
         }
     }
 
     public void Shoot()
     {
-        GameObject projectile = poolManager.GetPooledObject();
+        GameObject projectile = ProjectilePool.GetPooledObject();
         if (projectile == null)
         {
             return;
         }
 
-        projectile.transform.position = positionToStartShoot.position;
+        projectile.transform.position = transform.position;
 
         ProjectileBase projectileBase = projectile.GetComponent<ProjectileBase>();
         if (projectileBase)
         {
-            projectileBase.side = sideRefference.transform.localScale.x;
+            projectileBase.side = shooterRef.transform.localScale.x;
         }
 
         projectile.SetActive(true);

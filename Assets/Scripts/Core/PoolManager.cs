@@ -6,14 +6,23 @@ public class PoolManager : MonoBehaviour
     public GameObject prefab;
     public List<GameObject> pooledObjects;
     public int amount = 20;
+    public bool lazyLoad = false;
 
     private void Awake()
     {
-        StartPool();
+        if (lazyLoad == false)
+        {
+            StartPool();
+        }
     }
 
-    private void StartPool()
+    public void StartPool()
     {
+        if (pooledObjects.Count != 0)
+        {
+            return;
+        }
+
         pooledObjects = new List<GameObject>();
         for (int i = 0; i < amount; i++)
         {

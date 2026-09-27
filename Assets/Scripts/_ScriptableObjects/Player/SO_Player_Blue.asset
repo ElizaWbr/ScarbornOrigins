@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 669d7b0ad015f544e8fa8eddc12f6a2b, type: 3}
+  m_Name: SO_Player_Blue
+  m_EditorClassIdentifier: Assembly-CSharp::SOPlayerSetup
+  PFBPlayer: {fileID: 9059859343519794125, guid: 11869379517bf2c40bb4fdcfe2dc3102, type: 3}
+  SOAttackSetup: {fileID: 11400000, guid: aedb979790cadd8499d2aebbcbec75f9, type: 2}
+  speed: 15
+  runSpeed: 30
+  jumpForce: 23
+  jumpDurationInSeconds: 1
+  movementFriction: 0.8
+  runAnimationKey: Run
+  deathAnimationKey: Death
+  playerSwipeDuration: 0.1
+  jumpScaleY: 1.2
+  jumpScaleX: 0.8
+  jumpAnimationDuration: 0.3
+  jumpEase: 27

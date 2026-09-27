@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class ProjectileBase : MonoBehaviour
 {
-    public Vector3 direction;
-    public float timeToDestroy = 2f;
-    public int damageAmount = 1;
+    public SOAttackSetup soAttackSetup;
     public float side = 1;
-
     private float _currentSide;
-
     private void OnEnable()
     {
         /* Executa quando SetActive(true) é chamado */
@@ -21,13 +17,13 @@ public class ProjectileBase : MonoBehaviour
     IEnumerator TimerToDisableItem()
     {
         /* Espera alguns segundos para executar, o fluxo continua depois do return */
-        yield return new WaitForSeconds(timeToDestroy);
+        yield return new WaitForSeconds(soAttackSetup.timeToDestroy);
         gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        transform.Translate(direction * _currentSide * Time.deltaTime);
+        transform.Translate(soAttackSetup.direction * _currentSide * Time.deltaTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -36,7 +32,7 @@ public class ProjectileBase : MonoBehaviour
         if (enemy != null)
         {
             HealthBase healthBase = collision.transform.GetComponent<HealthBase>();
-            healthBase.Damage(damageAmount);
+            healthBase.Damage(soAttackSetup.damageAmount);
             gameObject.SetActive(false);
         }
     }

@@ -1,48 +1,54 @@
 using DG.Tweening;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlayerMovement : Inputs
 {
-
     [Header("Player")]
+    public SOPlayerSetup soPlayerSetup;
     public Rigidbody2D currentRigidbody;
 
     [Header("Health")]
     public HealthBase healthBase;
 
-    [Header("Player movement")]
-    public float speed = 15;
-    public float runSpeed = 30;
-    public float jumpForce = 23;
-    public float jumpDurationInSeconds = 1f;
-    public float movementFriction = .8f;
-
-    [Header("Animation Setup")]
-    public Animator animator;
-    public string runAnimationKey = "Run";
-    public string triggerDeath = "Death";
-
-    public float jumpScaleY = 1.2f;
-    public float jumpScaleX = 0.8f;
-    public float jumpAnimationDuration = .3f;
-    public Ease jumpEase = Ease.OutBack;
-
-    public float playerSwipeDuration = .1f;
+    //[Header(“Animation Setup”)]
+    //public Animator animator;
 
     private float _currentSpeed;
     private bool _isRunning = false;
     private bool _isJumping = false;
 
+    public GameObject currentPlayer;
+    public GunBase currentBook;
+    private Animator _currentAnimator;
 
     private void Awake()
     {
         LoadInputs();
 
+        currentPlayer = Instantiate(soPlayerSetup.PFBPlayer, transform);
+
         if (healthBase != null)
         {
             healthBase.OnKill += PlayerOnKill;
+            healthBase.flashColor = currentPlayer.GetComponentInChildren<FlashColor>();
         }
+
+        _currentAnimator = currentPlayer.GetComponentInChildren<Animator>();
+
+        GunSetup();
+    }
+
+    private void GunSetup()
+    {
+        /* We need to set Player values in GunBase script */
+
+        GunBase currentGun = soPlayerSetup.SOAttackSetup.PFBBook;
+        currentGun.soAttackSetup = soPlayerSetup.SOAttackSetup;
+        currentGun.shooterRef = transform;
+        currentBook = Instantiate(currentGun, transform);
     }
 
     private void Update()
@@ -72,8 +78,8 @@ public class PlayerMovement : Inputs
             return;
         }
 
-        animator.SetBool(runAnimationKey, false);
-        currentRigidbody.linearVelocity = Vector2.up * jumpForce;
+        _currentAnimator.SetBool(soPlayerSetup.runAnimationKey, false);
+        currentRigidbody.linearVelocity = Vector2.up * soPlayerSetup.jumpForce;
         HandleJumpAnimation();
     }
     private void HandleJumpAnimation()
@@ -98,7 +104,7 @@ public class PlayerMovement : Inputs
          * Removed animation from x scale to avoid auto turning player to the wrong side when changing the x value in the middle of the jumping animation
          */
         //currentRigidbody.transform.DOScaleX(scaleX * jumpScaleX, jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(jumpEase);
-        currentRigidbody.transform.DOScaleY(jumpScaleY, jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(jumpEase);
+        currentRigidbody.transform.DOScaleY(soPlayerSetup.jumpScaleY, soPlayerSetup.jumpAnimationDuration).SetLoops(2, LoopType.Yoyo).SetEase(soPlayerSetup.jumpEase);
 
         StartCoroutine(AllowJumping());
     }
@@ -106,15 +112,15 @@ public class PlayerMovement : Inputs
     IEnumerator AllowJumping()
     {
         // esperar segundos
-        yield return new WaitForSeconds(jumpDurationInSeconds);
+        yield return new WaitForSeconds(soPlayerSetup.jumpDurationInSeconds);
         _isJumping = false;
     }
 
     private void CheckPlayerMovement()
     {
         _isRunning = runAction.ReadValue<float>() == 1;
-        _currentSpeed = _isRunning ? runSpeed : speed;
-        animator.speed = _isRunning ? 2 : 1;
+        _currentSpeed = _isRunning ? soPlayerSetup.runSpeed : soPlayerSetup.speed;
+        _currentAnimator.speed = _isRunning ? 2 : 1;
 
         float triggeredHorizontal = horizontalAction.ReadValue<float>();
         float localScaleX = currentRigidbody.transform.localScale.x;
@@ -127,14 +133,14 @@ public class PlayerMovement : Inputs
             /* Swipe to left or right */
             if (localScaleX != triggeredHorizontal)
             {
-                currentRigidbody.transform.DOScaleX(triggeredHorizontal, playerSwipeDuration);
+                currentRigidbody.transform.DOScaleX(triggeredHorizontal, soPlayerSetup.playerSwipeDuration);
             }
-            
-            animator.SetBool(runAnimationKey, !_isJumping);
+
+            _currentAnimator.SetBool(soPlayerSetup.runAnimationKey, !_isJumping);
         }
         else
         {
-            animator.SetBool(runAnimationKey, false);
+            _currentAnimator.SetBool(soPlayerSetup.runAnimationKey, false);
         }
 
         HandleFriction();
@@ -149,12 +155,12 @@ public class PlayerMovement : Inputs
 
         if (currentVelocityX < 0)
         {
-            float newVelocity = currentVelocityX + movementFriction;
+            float newVelocity = currentVelocityX + soPlayerSetup.movementFriction;
             currentRigidbody.linearVelocityX = newVelocity < 0 ? newVelocity : 0;
         }
         else if (currentVelocityX > 0)
         {
-            float newVelocity = currentVelocityX - movementFriction;
+            float newVelocity = currentVelocityX - soPlayerSetup.movementFriction;
             currentRigidbody.linearVelocityX = newVelocity > 0 ? newVelocity : 0;
         }
     }
@@ -163,6 +169,6 @@ public class PlayerMovement : Inputs
     {
         /* Sempre remover para evitar ocupar espaço desnecessário na memória */
         healthBase.OnKill -= PlayerOnKill;
-        animator.SetTrigger(triggerDeath);
+        _currentAnimator.SetTrigger(soPlayerSetup.deathAnimationKey);
     }
 }

@@ -21,6 +21,7 @@ public class Inputs : MonoBehaviour
     private void Awake()
     {
         LoadInputs();
+        InputsAwake();
     }
 
     protected void LoadInputs()
@@ -47,5 +48,8 @@ public class Inputs : MonoBehaviour
         runAction.Disable();
         jumpAction.Disable();
         shootAction.Disable();
+    }
+    protected virtual void InputsAwake()
+    {
     }
 }
